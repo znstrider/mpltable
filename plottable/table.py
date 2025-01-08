@@ -496,8 +496,10 @@ class Table:
             else:
                 textprops = self._get_column_textprops(col_def)
 
+                # FIXME should pass `highlight_textprops` to the constructor
                 cell = create_cell(
-                    column_type=ColumnType.STRING,
+                    # column_type=ColumnType.STRING,
+                    column_type=ColumnType.HIGHLIGHTTEXT,
                     xy=(x, idx),
                     content=_content,
                     row_idx=idx,

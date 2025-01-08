@@ -10,6 +10,9 @@ from matplotlib.patches import Rectangle
 from .column_def import ColumnType
 
 
+from highlight_text import HighlightText
+
+
 def create_cell(column_type: ColumnType, *args, **kwargs) -> TableCell:
     """Factory Function to create a specific TableCell depending on `column_type`.
 
@@ -23,6 +26,8 @@ def create_cell(column_type: ColumnType, *args, **kwargs) -> TableCell:
         return SubplotCell(*args, **kwargs)
     elif column_type is ColumnType.STRING:
         return TextCell(*args, **kwargs)
+    elif column_type is ColumnType.HIGHLIGHTTEXT:
+        return HighlightTextCell(*args, **kwargs)
 
 
 class Cell:
@@ -257,6 +262,11 @@ class TextCell(TableCell):
         self.set_text()
 
     def set_text(self):
+        x, y = self._get_text_xy()
+
+        self.text = self.ax.text(x, y, str(self.content), **self.textprops)
+
+    def _get_text_xy(self):
         x, y = self.xy
 
         if self.ha == "left":
@@ -279,10 +289,84 @@ class TextCell(TableCell):
             # CHANGED
             y = y + self.padding * self.height
 
-        self.text = self.ax.text(x, y, str(self.content), **self.textprops)
+        return x, y
 
     def __repr__(self) -> str:
         return f"TextCell(xy={self.xy}, content={self.content}, row_idx={self.index[0]}, col_idx={self.index[1]})"  # noqa
+
+
+class HighlightTextCell(TextCell):
+    """A HighlightTextCell class for a plottable.table.Table that creates a text inside its rectangle patch."""
+
+    def __init__(
+        self,
+        xy: Tuple[float, float],
+        content: str | Number,
+        row_idx: int,
+        col_idx: int,
+        width: float = 1,
+        height: float = 1,
+        ax: mpl.axes.Axes = None,
+        rect_kw: Dict[str, Any] = {},
+        textprops: Dict[str, Any] = {},
+        highlight_textprops: Dict[str, Any] | None = None,
+        padding: float = 0.1,
+    ):
+        """
+        Args:
+            xy (Tuple[float, float]):
+                lower left corner of a rectangle
+            content (Any):
+                the content of the cell
+            row_idx (int):
+                row index
+            col_idx (int):
+                column index
+            width (float, optional):
+                width of the rectangle cell. Defaults to 1.
+            height (float, optional):
+                height of the rectangle cell. Defaults to 1.
+            ax (mpl.axes.Axes, optional):
+                matplotlib Axes object. Defaults to None.
+            rect_kw (Dict[str, Any], optional):
+                keywords passed to matplotlib.patches.Rectangle. Defaults to {}.
+            textprops (Dict[str, Any], optional):
+                textprops passed to matplotlib.text.Text. Defaults to {}.
+            padding (float, optional):
+                Padding around the text within the rectangle patch. Defaults to 0.1.
+
+        """
+        super().__init__(
+            xy=xy,
+            width=width,
+            height=height,
+            content=content,
+            row_idx=row_idx,
+            col_idx=col_idx,
+            ax=ax,
+            rect_kw=rect_kw,
+            textprops=textprops,
+            padding=padding,
+        )
+
+        self.highlight_textprops = highlight_textprops
+
+    def set_text(self):
+        x, y = self._get_text_xy()
+
+        content = str(self.content)
+
+        self.text = HighlightText(
+            x,
+            y,
+            content,
+            highlight_textprops=self.highlight_textprops,
+            ax=self.ax,
+            **self.textprops,
+        )
+
+    def __repr__(self) -> str:
+        return f"HighlightTextCell(xy={self.xy}, content={self.content}, row_idx={self.index[0]}, col_idx={self.index[1]})"  # noqa
 
 
 class Sequence:  # Row and Column can inherit from this

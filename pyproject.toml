@@ -15,6 +15,7 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Visualization",
 ]
 dependencies = [
+  "highlight-text>=0.2",
   "matplotlib",
   "numpy",
   "pandas",
