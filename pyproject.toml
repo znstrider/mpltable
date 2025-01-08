@@ -1,0 +1,64 @@
+
+[project]
+authors = [
+  {name = "znstrider", email = "mindfulstrider@gmail.com"},
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Framework :: Matplotlib",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Scientific/Engineering :: Visualization",
+]
+dependencies = [
+  "matplotlib",
+  "numpy",
+  "pandas",
+  "Pillow",
+]
+description = "Beautifully customized tables with matplotlib"
+dynamic = ["version"]
+license = "MIT"
+name = "plottable"
+readme = "README.md"
+requires-python = ">=3.10"
+
+[project.urls]
+Homepage = "https://github.com/znstrider/plottable"
+
+[project.optional-dependencies]
+development = [
+  "black",
+  "pytest",
+]
+docs = [
+  "sphinx==4.5.0",
+  "sphinx-book-theme==0.3.3",
+  "myst-nb",
+  "ipykernel",
+  "plottable",
+]
+
+[tool.hatch.version]
+path = "plottable/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/plottable",
+]
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+    "nbformat>=5.10.4",
+    "pytest-xdist>=3.6.1",
+    "pytest>=8.3.4",
+]

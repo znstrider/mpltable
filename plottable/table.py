@@ -94,7 +94,6 @@ class Table:
         even_row_color: str | Tuple = None,
         odd_row_color: str | Tuple = None,
     ):
-
         if index_col is not None:
             if index_col in df.columns:
                 df = df.set_index(index_col)
@@ -231,7 +230,8 @@ class Table:
             x_max = max(col.get_xrange()[1] for col in columns)
             dx = x_max - x_min
 
-            y = 0 - self.col_label_row.height
+            # CHANGED Substract the group label (default) height (1) to the `y` coordinates to position properly
+            y = 0 - self.col_label_row.height - 1
 
             textprops = self.textprops.copy()
             textprops.update({"ha": "center", "va": "bottom"})
@@ -249,7 +249,8 @@ class Table:
             self.col_group_cells[group].draw()
             self.ax.plot(
                 [x_min + 0.05 * dx, x_max - 0.05 * dx],
-                [y, y],
+                # CHANGED Add height (1) to have the border at the botton of the Rectangle patch of the group label
+                [y + 1, y + 1],
                 lw=0.2,
                 color=plt.rcParams["text.color"],
             )
