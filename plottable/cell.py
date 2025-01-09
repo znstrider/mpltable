@@ -362,6 +362,7 @@ class HighlightTextCell(TextCell):
             content,
             highlight_textprops=self.highlight_textprops,
             ax=self.ax,
+            textalign="right",
             **self.textprops,
         )
 
