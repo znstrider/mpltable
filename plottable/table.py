@@ -149,10 +149,11 @@ class Table:
         self._plot_column_borders(**column_border_kw)
 
         self.ax.set_xlim(-0.025, sum(self._get_column_widths()) + 0.025)
+
+        miny = -self.col_label_row.height
         if self.col_group_cells:
-            miny = -2
-        else:
-            miny = -1
+            miny -= 0.5  # FIXME hardcoded value
+            # miny -= 1  # FIXME hardcoded value
 
         self.ax.set_ylim(miny - 0.025, ymax + 0.05)
         self.ax.invert_yaxis()
@@ -216,6 +217,11 @@ class Table:
 
     def _plot_col_group_labels(self) -> None:
         """Plots the column group labels."""
+
+        GROUP_LABEL_TEXTPROPS = {"fontsize": 12, "fontweight": "bold"}
+        GROUP_LABEL_KW = {
+            "height": 0.5,
+        }
         col_groups = self._get_col_groups()
 
         self.col_group_cells = {}
@@ -231,10 +237,12 @@ class Table:
             dx = x_max - x_min
 
             # CHANGED Substract the group label (default) height (1) to the `y` coordinates to position properly
-            y = 0 - self.col_label_row.height - 1
+            y = 0 - self.col_label_row.height - GROUP_LABEL_KW["height"]
 
             textprops = self.textprops.copy()
             textprops.update({"ha": "center", "va": "bottom"})
+
+            textprops.update(GROUP_LABEL_TEXTPROPS)
 
             self.col_group_cells[group] = TextCell(
                 xy=(x_min, y),
@@ -242,7 +250,7 @@ class Table:
                 row_idx=y,
                 col_idx=columns[0].index,
                 width=x_max - x_min,
-                height=1,
+                height=GROUP_LABEL_KW["height"],
                 ax=self.ax,
                 textprops=textprops,
             )
@@ -250,7 +258,7 @@ class Table:
             self.ax.plot(
                 [x_min + 0.05 * dx, x_max - 0.05 * dx],
                 # CHANGED Add height (1) to have the border at the botton of the Rectangle patch of the group label
-                [y + 1, y + 1],
+                [y + GROUP_LABEL_KW["height"], y + GROUP_LABEL_KW["height"]],
                 lw=0.2,
                 color=plt.rcParams["text.color"],
             )
@@ -496,10 +504,13 @@ class Table:
             else:
                 textprops = self._get_column_textprops(col_def)
 
+                column_type = ColumnType.STRING
+                if "::{" in str(_content):
+                    column_type = ColumnType.HIGHLIGHTTEXT
+
                 # FIXME should pass `highlight_textprops` to the constructor
                 cell = create_cell(
-                    # column_type=ColumnType.STRING,
-                    column_type=ColumnType.HIGHLIGHTTEXT,
+                    column_type=column_type,
                     xy=(x, idx),
                     content=_content,
                     row_idx=idx,
