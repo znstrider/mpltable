@@ -18,7 +18,8 @@ dependencies = [
   "highlight-text>=0.2",
   "matplotlib",
   "numpy",
-  "pandas",
+  "openpyxl>=3.1.5",
+  "pandas>=2.2.3",
   "Pillow",
 ]
 description = "Beautifully customized tables with matplotlib"
@@ -58,8 +59,9 @@ requires = ["hatchling"]
 
 [dependency-groups]
 dev = [
-    "ipykernel>=6.29.5",
-    "nbformat>=5.10.4",
-    "pytest-xdist>=3.6.1",
-    "pytest>=8.3.4",
+  "ipykernel>=6.29.5",
+  "nbformat>=5.10.4",
+  "pytest-xdist>=3.6.1",
+  "pytest>=8.3.4",
+  "pyinstrument>=5.0.0",
 ]
